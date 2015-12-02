@@ -21,7 +21,7 @@ int enemyCount = 8;
 int c=0;
 int[] enemyX = new int[enemyCount];
 int[] enemyY = new int[enemyCount];
-int hpy=200;
+int hpy=40;
 float tx,ty;
 int shipx,shipy;
 int speed=6;
