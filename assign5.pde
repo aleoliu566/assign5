@@ -8,6 +8,7 @@ final int ENEMY_2=2;
 int gameState;
 int enemyType=0;
 
+
 boolean upPressed = false;
 boolean downPressed = false;
 boolean leftPressed = false;
