@@ -23,7 +23,7 @@ int[] enemyY = new int[enemyCount];
 int hpy=40;
 float tx,ty;
 int shipx,shipy;
-int speed=6;
+int speed=4;
 int score=0;
 
 //bullet
@@ -31,7 +31,7 @@ PImage[] shoot = new PImage[6];
 boolean [] bulletlimit = new boolean[5];
 int [] bullet_x=new int[5];//{0,1,2,3,4};
 int [] bullet_y=new int[5];//{0,1,2,3,4};
-int bulletSpeed=7;
+int bulletSpeed=3;
 int space;
 int bulletnumber=0;
 int closestEnemy;
@@ -100,15 +100,16 @@ void draw(){
 
       //*******************************************************************
       for(int i = 0; i < 5;i++){
-      if(enemyX[0] > 0){
-        if(closestEnemy != -1 && enemyX[closestEnemy] < bullet_x[i]){
-          if(enemyY[closestEnemy] > bullet_y[i]){
-            bullet_y[i] += 3;
-          }else if(enemyY[closestEnemy] < bullet_y[i]){
-            bullet_y[i] -= 3;
-            }  
+        closestEnemy(bullet_x[i],bullet_y[i]);
+        if(enemyX[0]>0){
+          if(closestEnemy != -1 && enemyX[closestEnemy] < bullet_x[i]){
+            if(enemyY[closestEnemy] > bullet_y[i]){
+              bullet_y[i] += 3;
+            }else if(enemyY[closestEnemy] < bullet_y[i]){
+              bullet_y[i] -= 3;
+              }  
+            }
           }
-        }
       }
       //treasure
       if (isHit(shipx, shipy ,fighter.width, fighter.height
@@ -256,17 +257,19 @@ void reset(){
   }
 }
 //*******************************************************************************
-int closestEnemy(int currentFighterX,int currentFighterY){
+int closestEnemy(int bullet_x,int bullet_y){
   float enemyDistance = 1000;
   if (enemyX[7] > width || (enemyX [5] == -1 && enemyX[4] > width)){
     closestEnemy = -1;
   }else{    
     for( int i= 0; i < 8; i++ ){
-      if ( enemyX[i] != -1 ) {        
-        if( dist(currentFighterX, currentFighterY, enemyX[i], enemyY[i]) < enemyDistance){
-          enemyDistance = dist(currentFighterX, currentFighterY, enemyX[i], enemyY[i]);
+      if(enemyY[i]>0){
+      if ( enemyX[i] != -1 ) {
+        if( dist(bullet_x, bullet_y, enemyX[i], enemyY[i]) < enemyDistance){
+          enemyDistance = dist(bullet_x,bullet_y, enemyX[i], enemyY[i]);
           closestEnemy = i;
         }
+      }
       }
     }  
   }  
