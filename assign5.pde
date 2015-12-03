@@ -8,7 +8,6 @@ final int ENEMY_2=2;
 int gameState;
 int enemyType=0;
 
-
 boolean upPressed = false;
 boolean downPressed = false;
 boolean leftPressed = false;
@@ -29,10 +28,13 @@ int score=0;
 
 //bullet
 PImage[] shoot = new PImage[6];
-int [] bullet_x={0,1,2,3,4};
-int [] bullet_y={0,1,2,3,4};
-int bullet=1;
+boolean [] bulletlimit = new boolean[5];
+int [] bullet_x=new int[5];//{0,1,2,3,4};
+int [] bullet_y=new int[5];//{0,1,2,3,4};
+int bulletSpeed=7;
 int space;
+int bulletnumber=0;
+int closestEnemy;
 
 void setup () {
   size(640, 480) ;
@@ -71,8 +73,7 @@ void draw(){
             if(mousePressed)
               gameState = GAME_RUN;
               enemyType=0;
-              addEnemy(0);
-              //bullet=1;
+              reset();
         }
       }
       break;
@@ -95,8 +96,20 @@ void draw(){
       textSize(32);
       text("score:"+score, 20, 450); 
       //bullet
-      bulletnumber();
-      
+      bulletlimit();
+
+      //*******************************************************************
+      for(int i = 0; i < 5;i++){
+      if(enemyX[0] > 0){
+        if(closestEnemy != -1 && enemyX[closestEnemy] < bullet_x[i]){
+          if(enemyY[closestEnemy] > bullet_y[i]){
+            bullet_y[i] += 3;
+          }else if(enemyY[closestEnemy] < bullet_y[i]){
+            bullet_y[i] -= 3;
+            }  
+          }
+        }
+      }
       //treasure
       if (isHit(shipx, shipy ,fighter.width, fighter.height
       ,tx, ty, treasure.width, treasure.height) == true){
@@ -218,34 +231,49 @@ void draw(){
       break;
     case GAME_OVER:
       image(end2,0,0);
-        //flameX=1000;
-        //flameY=1000;
         if(mouseX > 205 && mouseX <440){
           if(mouseY >305 && mouseY <350){
             image(end1,0,0);
               if(mousePressed){
                 gameState = GAME_RUN;
-                hpy=40;
-                score=0;
-                shipx = width-50;
-                shipy = height/2;
-                addEnemy(0);
+                reset();
               }
            }
         }
       break;
     }
 }
-/*
-void enemyChange(int state){
-  if (enemyX[5] == -1 && enemyX[4] > width + 200){        
-    enemyType = state;
-    addEnemy(state);
-  }else if(enemyX[7] > width + 400){
-    enemyType = state;
-    addEnemy(state);
+
+void reset(){
+  hpy=40;
+  score=0;
+  shipx = width-50;
+  shipy = height/2;
+  addEnemy(0);
+  for(int i=0;i<5;i++){
+    bullet_x[i]=-300;
+    bullet_y[i]=-300;
   }
-}  */
+}
+//*******************************************************************************
+int closestEnemy(int currentFighterX,int currentFighterY){
+  float enemyDistance = 1000;
+  if (enemyX[7] > width || (enemyX [5] == -1 && enemyX[4] > width)){
+    closestEnemy = -1;
+  }else{    
+    for( int i= 0; i < 8; i++ ){
+      if ( enemyX[i] != -1 ) {        
+        if( dist(currentFighterX, currentFighterY, enemyX[i], enemyY[i]) < enemyDistance){
+          enemyDistance = dist(currentFighterX, currentFighterY, enemyX[i], enemyY[i]);
+          closestEnemy = i;
+        }
+      }
+    }  
+  }  
+  return closestEnemy;
+}
+
+
 
 void drawEnemy(){
   for (int i = 0; i < enemyCount; ++i) {
@@ -255,7 +283,6 @@ void drawEnemy(){
     }
   }
 }
-
 
 // 0 - straight, 1-slope, 2-dimond
 void addEnemy(int type)
@@ -345,36 +372,20 @@ void keyPressed(){
         break;
     }
   }
+
   if(key==' '){
-    if(bullet==1){
-      bullet_x[0]=shipx;
-      bullet_y[0]=shipy;
-      space = 1;
-    }
-    if(bullet==2){
-      space = 2;
-      bullet_x[1]=shipx;
-      bullet_y[1]=shipy;
-    }
-    if(bullet==3){
-      space = 3;
-      bullet_x[2]=shipx;
-      bullet_y[2]=shipy;
-    }
-    if(bullet==4){
-      space = 4;
-      bullet_x[3]=shipx;
-      bullet_y[3]=shipy;
-    }
-    if(bullet==5){
-      space = 5;
-      bullet_x[4]=shipx;
-      bullet_y[4]=shipy;
-    }
-    if(bullet==6){
-      space=6;
-    }
-  }
+    if(gameState==1){
+      
+          if(bulletlimit[bulletnumber]==false){
+            bulletlimit[bulletnumber]=true;
+            bullet_x[bulletnumber]=shipx-10;
+            bullet_y[bulletnumber]=shipy+10;
+            bulletnumber++;
+          }
+          if(bulletnumber>4)
+            bulletnumber = 0;
+       }
+    } 
 }
 void keyReleased(){
   if(key == CODED){
@@ -396,6 +407,7 @@ void keyReleased(){
 void scoreChange(int value){
     score =score+value;
 }
+
 boolean isHit(float ax,float ay,float aw,float ah,float bx,float by,float bw,float bh){
   if (ax >= bx - aw && ax <= bx + bw && ay >= by - ah && ay <= by + bh){
   return true;
@@ -403,91 +415,17 @@ boolean isHit(float ax,float ay,float aw,float ah,float bx,float by,float bw,flo
   return false;  
 }
 
-
-void bulletnumber(){
-  if(space==1){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0){
-           bullet=2;
-         }else{
-           bullet=7;
-         }
-       }
-       image(shoot[1],bullet_x[0],bullet_y[0]);
-       if(space==2){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0){
-           bullet=3;
-         }else{
-           bullet=8;
-         }
-         //bullet=3;
-       }
-       image(shoot[2],bullet_x[1],bullet_y[1]);
-      if(space==3){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0){
-           bullet=4;
-         }else{
-           bullet=9;
-         }
-         //bullet=4;
-       }
-       image(shoot[3],bullet_x[2],bullet_y[2]);
-       if(space==4){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0){
-           bullet=5;
-         }else{
-           bullet=10;
-         }
-         //bullet=5;
-       }
-       image(shoot[4],bullet_x[3],bullet_y[3]);
-       if(space==5){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0){
-            bullet=1;
-         }else{
-            bullet=6;
-      }  
-       }
-       image(shoot[5],bullet_x[4],bullet_y[4]);
-       if(space==6){
-         bullet_x[4]=bullet_x[4]-3;         
-         bullet_x[3]=bullet_x[3]-3;
-         bullet_x[2]=bullet_x[2]-3;
-         bullet_x[1]=bullet_x[1]-3;
-         bullet_x[0]=bullet_x[0]-3;
-         if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0)
-            bullet=1;
-       }
-       for(int i=7;i<10;i++){
-         if(bullet==i){
-             if(bullet_x[0]<0||bullet_x[1]<0||bullet_x[2]<0||bullet_x[3]<0||bullet_x[4]<0)
-             bullet=i-5;
-             println(bullet);
-         }
-       }
+//bulletlimit
+void bulletlimit(){
+  for(int i=0;i<5;i++){
+    if(bulletlimit[i]==true){
+      image(shoot[i],bullet_x[i],bullet_y[i]);
+      bullet_x[i]=bullet_x[i]-bulletSpeed;
+    }
+    if(bullet_x[i]< -shoot[i].width){
+      bulletlimit[i]=false;
+      bullet_x[i]=-300;
+      bullet_y[i]=-300;
+    }
+  }
 }
-
