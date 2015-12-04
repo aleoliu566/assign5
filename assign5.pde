@@ -34,7 +34,7 @@ int [] bullet_y=new int[5];//{0,1,2,3,4};
 int bulletSpeed=3;
 int space;
 int bulletnumber=0;
-int closestEnemy;
+int closeEnemy;
 
 void setup () {
   size(640, 480) ;
@@ -98,14 +98,14 @@ void draw(){
       //bullet
       bulletlimit();
 
-      //*******************************************************************
+      //closesttoEnemy
       for(int i = 0; i < 5;i++){
         closestEnemy(bullet_x[i],bullet_y[i]);
         if(enemyX[0]>0){
-          if(closestEnemy != -1 && enemyX[closestEnemy] < bullet_x[i]){
-            if(enemyY[closestEnemy] > bullet_y[i]){
+          if(closeEnemy != -1 && enemyX[closeEnemy] < bullet_x[i]){
+            if(enemyY[closeEnemy] > bullet_y[i]){
               bullet_y[i] += 3;
-            }else if(enemyY[closestEnemy] < bullet_y[i]){
+            }else if(enemyY[closeEnemy] < bullet_y[i]){
               bullet_y[i] -= 3;
               }  
             }
@@ -260,24 +260,21 @@ void reset(){
 int closestEnemy(int bullet_x,int bullet_y){
   float enemyDistance = 1000;
   if (enemyX[7] > width || (enemyX [5] == -1 && enemyX[4] > width)){
-    closestEnemy = -1;
+    closeEnemy = -1;
   }else{    
     for( int i= 0; i < 8; i++ ){
       if(enemyY[i]>0){
       if ( enemyX[i] != -1 ) {
         if( dist(bullet_x, bullet_y, enemyX[i], enemyY[i]) < enemyDistance){
           enemyDistance = dist(bullet_x,bullet_y, enemyX[i], enemyY[i]);
-          closestEnemy = i;
+          closeEnemy = i;
         }
       }
       }
     }  
   }  
-  return closestEnemy;
+  return closeEnemy;
 }
-
-
-
 void drawEnemy(){
   for (int i = 0; i < enemyCount; ++i) {
     if (enemyX[i] != -1 || enemyY[i] != -1) {
@@ -286,7 +283,6 @@ void drawEnemy(){
     }
   }
 }
-
 // 0 - straight, 1-slope, 2-dimond
 void addEnemy(int type)
 {  
@@ -312,7 +308,6 @@ void addStraightEnemy()
   float t = random(height - enemy.height);
   int h = int(t);
   for (int i = 0; i < 5; ++i) {
-
     enemyX[i] = (i+1)*-80;
     enemyY[i] = h;
   }
@@ -322,7 +317,6 @@ void addSlopeEnemy()
   float t = random(height - enemy.height * 5);
   int h = int(t);
   for (int i = 0; i < 5; ++i) {
-
     enemyX[i] = (i+1)*-80;
     enemyY[i] = h + i * 40;
   }
@@ -345,7 +339,6 @@ void addDiamondEnemy()
       enemyY[i+1] = h - 1 * 40;
       i++;
       x_axis++;
-      
     }
     else {
       enemyX[i] = x_axis*-80;
@@ -375,7 +368,6 @@ void keyPressed(){
         break;
     }
   }
-
   if(key==' '){
     if(gameState==1){
       
@@ -405,8 +397,9 @@ void keyReleased(){
       case RIGHT:
         rightPressed = false;
         break;
-    }}}
-
+    }
+  }
+}
 void scoreChange(int value){
     score =score+value;
 }
