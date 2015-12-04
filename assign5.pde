@@ -103,11 +103,13 @@ void draw(){
         closestEnemy(bullet_x[i],bullet_y[i]);
         if(enemyX[0]>0){
           if(closeEnemy != -1 && enemyX[closeEnemy] < bullet_x[i]){
-            if(enemyY[closeEnemy] > bullet_y[i]){
-              bullet_y[i] += 3;
-            }else if(enemyY[closeEnemy] < bullet_y[i]){
-              bullet_y[i] -= 3;
-              }  
+            if(enemyY[closeEnemy]>0){
+              if(enemyY[closeEnemy] > bullet_y[i]){
+                bullet_y[i] += 3;
+               }else if(enemyY[closeEnemy] < bullet_y[i]){
+                bullet_y[i] -= 3;
+               }  
+            }  
             }
           }
       }
