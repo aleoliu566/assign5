@@ -96,7 +96,7 @@ void draw(){
       textSize(32);
       text("score:"+score, 20, 450); 
       //bullet
-      bulletnumber();
+      bullet_number();
 
       //closesttoEnemy
       for(int i = 0; i < 5;i++){
@@ -412,7 +412,7 @@ boolean isHit(float ax,float ay,float aw,float ah,float bx,float by,float bw,flo
 }
 
 //bulletlimit
-void bulletnumber(){
+void bullet_number(){
   for(int i=0;i<5;i++){
     if(bulletlimit[i]==true){
       image(shoot[i],bullet_x[i],bullet_y[i]);
